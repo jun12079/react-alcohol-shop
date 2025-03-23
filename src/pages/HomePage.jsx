@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Homepage() {
 	return (
 		<>
@@ -21,7 +23,9 @@ export default function Homepage() {
 						<p className="text-muted mb-0">
 							在這裡，每一滴酒都是時光的沉澱，蘊含匠心與故事。我們精選來自世界各地的佳釀，無論是醇厚的威士忌、甘美的葡萄酒，還是獨特的手工調酒，都等待與懂得品味的你相遇。舉杯之間，不只是感受酒香，更是體驗生活的美好。
 						</p>
-						<button className="btn btn-dark rounded-0 mt-6">查看商品</button>
+						<Link to="/products" className="btn btn-dark rounded-0 mt-6">
+							查看商品
+						</Link>
 					</div>
 				</div>
 			</div>
