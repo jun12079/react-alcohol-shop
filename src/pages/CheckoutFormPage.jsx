@@ -1,23 +1,45 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateCartData } from "../redux/cartSlice";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 export default function CheckoutFormPage() {
+
+    const [cart, setCart] = useState([]);
+
+    const dispatch = useDispatch();
+        const getCart = async () => {
+            try {
+                const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
+                setCart(res.data.data);
+                dispatch(updateCartData(res.data.data));
+            } catch (error) {
+                void error;
+                alert("取得購物車失敗");
+            }
+        };
+
+    useEffect(() => {
+            getCart();
+        }, []);
+
     return (
         <>
             <div className="container" style={{ paddingTop: "64px" }}>
                 <div className="row justify-content-center">
                     <div className="col-md-10">
                         <nav className="navbar navbar-expand-lg navbar-light px-0">
-                            <a className="navbar-brand" href="./index.html">
-                                Navbar
-                            </a>
                             <ul className="list-unstyled mb-0 ms-md-auto d-flex align-items-center justify-content-between justify-content-md-end w-100 mt-md-0 mt-4">
                                 <li className="me-md-6 me-3 position-relative custom-step-line">
                                     <i className="fas fa-check-circle d-md-inline d-block text-center"></i>
                                     <span className="text-nowrap">結帳表單</span>
                                 </li>
                                 <li className="me-md-6 me-3 position-relative custom-step-line">
-                                    <i className="fas fa-check-circle d-md-inline d-block text-center"></i>
+                                    <i className="fas fa-dot-circle d-md-inline d-block text-center"></i>
                                     <span className="text-nowrap">付款方式</span>
                                 </li>
                                 <li>
@@ -36,36 +58,25 @@ export default function CheckoutFormPage() {
                 <div className="row flex-row-reverse justify-content-center pb-5">
                     <div className="col-md-4">
                         <div className="border p-4 mb-4">
-                            <div className="d-flex">
-                                <img
-                                    src="https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1916&q=80"
-                                    alt=""
-                                    className="me-2"
-                                    style={{ width: "48px", height: "48px", objectFit: "cover" }}
-                                />
-                                <div className="w-100">
-                                    <div className="d-flex justify-content-between">
-                                        <p className="mb-0 fw-bold">Lorem ipsum</p>
-                                        <p className="mb-0">NT$12,000</p>
+                            {
+                                cart.carts?.map((cartItem) => (
+                                    <div className="d-flex mt-2" key={cartItem.id}>
+                                        <img
+                                            src={cartItem.product.imageUrl}
+                                            alt={cartItem.product.title}
+                                            className="me-2"
+                                            style={{ width: "48px", height: "48px", objectFit: "cover" }}
+                                        />
+                                        <div className="w-100">
+                                            <div className="d-flex justify-content-between">
+                                                <p className="mb-0 fw-bold">{cartItem.product.title}</p>
+                                                <p className="mb-0">NT${cartItem.final_total.toLocaleString()}</p>
+                                            </div>
+                                            <p className="mb-0 fw-bold">x1</p>
+                                        </div>
                                     </div>
-                                    <p className="mb-0 fw-bold">x1</p>
-                                </div>
-                            </div>
-                            <div className="d-flex mt-2">
-                                <img
-                                    src="https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1916&q=80"
-                                    alt=""
-                                    className="me-2"
-                                    style={{ width: "48px", height: "48px", objectFit: "cover" }}
-                                />
-                                <div className="w-100">
-                                    <div className="d-flex justify-content-between">
-                                        <p className="mb-0 fw-bold">Lorem ipsum</p>
-                                        <p className="mb-0">NT$12,000</p>
-                                    </div>
-                                    <p className="mb-0 fw-bold">x1</p>
-                                </div>
-                            </div>
+                                ))
+                            }
                             <table className="table mt-4 border-top border-bottom text-muted">
                                 <tbody>
                                     <tr>
@@ -73,24 +84,15 @@ export default function CheckoutFormPage() {
                                             scope="row"
                                             className="border-0 px-0 pt-4 font-weight-normal"
                                         >
-                                            Subtotal
+                                            小計
                                         </th>
-                                        <td className="text-end border-0 px-0 pt-4">NT$24,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th
-                                            scope="row"
-                                            className="border-0 px-0 pt-0 pb-4 font-weight-normal"
-                                        >
-                                            Payment
-                                        </th>
-                                        <td className="text-end border-0 px-0 pt-0 pb-4">ApplePay</td>
+                                        <td className="text-end border-0 px-0 pt-4">NT${cart.final_total?.toLocaleString()}</td>
                                     </tr>
                                 </tbody>
                             </table>
                             <div className="d-flex justify-content-between mt-4">
-                                <p className="mb-0 h4 fw-bold">Total</p>
-                                <p className="mb-0 h4 fw-bold">NT$24,000</p>
+                                <p className="mb-0 h4 fw-bold">總計</p>
+                                <p className="mb-0 h4 fw-bold">NT${cart.final_total?.toLocaleString()}</p>
                             </div>
                         </div>
                     </div>
@@ -109,7 +111,7 @@ export default function CheckoutFormPage() {
                                     placeholder="example@gmail.com"
                                 />
                             </div>
-                            <p className="mt-4">Shipping address</p>
+                            {/* <p className="mt-4">Shipping address</p> */}
                             <div className="mb-2">
                                 <label htmlFor="ContactName" className="text-muted mb-0">
                                     名字
@@ -118,7 +120,7 @@ export default function CheckoutFormPage() {
                                     type="text"
                                     className="form-control"
                                     id="ContactName"
-                                    placeholder="Carmen A. Rose"
+                                    placeholder="請輸入姓名"
                                 />
                             </div>
                             <div className="mb-2">
@@ -129,7 +131,7 @@ export default function CheckoutFormPage() {
                                     type="text"
                                     className="form-control"
                                     id="ContactPhone"
-                                    placeholder="Password"
+                                    placeholder="請輸入電話"
                                 />
                             </div>
                             <div className="mb-2">
@@ -140,7 +142,7 @@ export default function CheckoutFormPage() {
                                     className="form-control"
                                     rows="3"
                                     id="ContactMessage"
-                                    placeholder="message ... "
+                                    placeholder="請輸入訊息 ... "
                                 ></textarea>
                             </div>
                         </form>

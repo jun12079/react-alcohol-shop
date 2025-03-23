@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ReactLoading from "react-loading";
 import { Link } from "react-router-dom";
+import Pagination from "../components/Pagination";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 export default function ProductsPage() {
 
+    const [pageInfo, setPageInfo] = useState({});
     const [products, setProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
     const [isScreenLoading, setIsScreenLoading] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [qtySelect, setQtySelect] = useState(1);
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [qtySelect, setQtySelect] = useState(1);
     const [selectedCategory, setSelectedCategory] = useState("全部");
     const [wishList, setWishList] = useState(() => {
         const initWishList = localStorage.getItem("wishList") ? JSON.parse(localStorage.getItem("wishList")) : {};
@@ -28,23 +30,23 @@ export default function ProductsPage() {
         setWishList(newWishList);
     };
 
-    const addCartItem = async (product_id, qty) => {
-        setIsLoading(true);
-        try {
-            await axios.post(`${BASE_URL}/v2/api/${API_PATH}/cart`, {
-                data: {
-                    product_id,
-                    qty: Number(qty),
-                },
-            });
-        } catch (error) {
-            void error;
-            alert("加入購物車失敗");
-        } finally {
-            setIsLoading(false);
-            setQtySelect(1);
-        }
-    };
+    // const addCartItem = async (product_id, qty) => {
+    //     setIsLoading(true);
+    //     try {
+    //         await axios.post(`${BASE_URL}/v2/api/${API_PATH}/cart`, {
+    //             data: {
+    //                 product_id,
+    //                 qty: Number(qty),
+    //             },
+    //         });
+    //     } catch (error) {
+    //         void error;
+    //         alert("加入購物車失敗");
+    //     } finally {
+    //         setIsLoading(false);
+    //         setQtySelect(1);
+    //     }
+    // };
 
     useEffect(() => {
         const getAllProducts = async () => {
@@ -62,26 +64,31 @@ export default function ProductsPage() {
         getAllProducts();
     }, []);
 
+    const getProducts = async (page = 1) => {
+        setIsScreenLoading(true);
+        try {
+            const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/products?page=${page}&category=${selectedCategory === "全部" ? "" : selectedCategory}`);
+            setProducts(res.data.products);
+            setPageInfo(res.data.pagination)
+        } catch (error) {
+            void error;
+            alert("取得產品失敗");
+        } finally {
+            setIsScreenLoading(false);
+        }
+    };
     useEffect(() => {
-        const getProducts = async () => {
-            setIsScreenLoading(true);
-            try {
-                const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/products?category=${selectedCategory === "全部" ? "" : selectedCategory}`);
-                setProducts(res.data.products);
-            } catch (error) {
-                void error;
-                alert("取得產品失敗");
-            } finally {
-                setIsScreenLoading(false);
-            }
-        };
         getProducts();
     }, [selectedCategory]);
 
+    const handlePageChange = (page) => {
+        getProducts(page);
+    }
+
     const categories = ['全部', ...new Set(allProducts.map((product) => product.category))];
-    const filteredProducts = allProducts.filter((product) => {
-        return selectedCategory === "全部" ? product : product.category === selectedCategory;
-    });
+    // const filteredProducts = allProducts.filter((product) => {
+    //     return selectedCategory === "全部" ? product : product.category === selectedCategory;
+    // });
 
     return (
         <>
@@ -103,7 +110,7 @@ export default function ProductsPage() {
                             opacity: 0.1,
                         }}
                     ></div>
-                    <h2 className="fw-bold">Lorem ipsum.</h2>
+                    <h2 className="fw-bold">產品列表</h2>
                 </div>
                 <div className="container mt-md-5 mt-3 mb-7">
                     <div className="row">
@@ -152,7 +159,7 @@ export default function ProductsPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="card border-0">
+                                {/* <div className="card border-0">
                                     <div
                                         className="card-header px-0 py-4 bg-white border border-bottom-0 border-top border-start-0 border-end-0 rounded-0"
                                         id="headingTwo"
@@ -200,7 +207,7 @@ export default function ProductsPage() {
                                             </ul>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="col-md-8">
@@ -243,35 +250,7 @@ export default function ProductsPage() {
                                     );
                                 })}
                             </div>
-                            <nav className="d-flex justify-content-center">
-                                <ul className="pagination">
-                                    <li className="page-item">
-                                        <a className="page-link" href="#" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-                                    <li className="page-item active">
-                                        <a className="page-link" href="#">
-                                            1
-                                        </a>
-                                    </li>
-                                    <li className="page-item">
-                                        <a className="page-link" href="#">
-                                            2
-                                        </a>
-                                    </li>
-                                    <li className="page-item">
-                                        <a className="page-link" href="#">
-                                            3
-                                        </a>
-                                    </li>
-                                    <li className="page-item">
-                                        <a className="page-link" href="#" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <Pagination pageInfo={pageInfo} handlePageChange={handlePageChange} />
                         </div>
                     </div>
                 </div>

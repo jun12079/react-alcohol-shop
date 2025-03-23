@@ -8,8 +8,9 @@ import CheckoutFormPage from "../pages/CheckoutFormPage";
 import CheckoutPaymentPage from "../pages/CheckoutPaymentPage";
 import CheckoutSuccessPage from "../pages/CheckoutSuccessPage";
 
-// import AdminPage from "../pages/admin/AdminPage";
-// import NotFound from "../pages/NotFound";
+import AdminPage from "../pages/admin/AdminPage";
+import NotFound from "../pages/NotFound";
+import LoginPage from "../pages/admin/LoginPage";
 
 const router = createHashRouter([
     {
@@ -46,14 +47,18 @@ const router = createHashRouter([
             }
         ]
     },
-    // {
-    //     path: '/admin',
-    //     element: <AdminPage />,
-    // },
-    // {
-    //     path: '*',
-    //     element: <NotFound />,
-    // }
+    {
+        path: '/login',
+        element: <LoginPage />,
+    },
+    {
+        path: '/admin',
+        element: <AdminPage />,
+    },
+    {
+        path: '*',
+        element: <NotFound />,
+    }
 ]);
 
 export default router;

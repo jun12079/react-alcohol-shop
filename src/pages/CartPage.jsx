@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import ReactLoading from "react-loading";
 import { Link } from "react-router-dom";
 import Swiper from "swiper";
@@ -93,18 +93,18 @@ export default function CartPage() {
         }
     }
 
-    const removeCart = async () => {
-        setIsScreenLoading(true);
-        try {
-            await axios.delete(`${BASE_URL}/v2/api/${API_PATH}/carts`);
-            getCart();
-        } catch (error) {
-            void error;
-            alert("刪除購物車失敗");
-        } finally {
-            setIsScreenLoading(false);
-        }
-    }
+    // const removeCart = async () => {
+    //     setIsScreenLoading(true);
+    //     try {
+    //         await axios.delete(`${BASE_URL}/v2/api/${API_PATH}/carts`);
+    //         getCart();
+    //     } catch (error) {
+    //         void error;
+    //         alert("刪除購物車失敗");
+    //     } finally {
+    //         setIsScreenLoading(false);
+    //     }
+    // }
 
     const removeCartItem = async (id) => {
         setIsScreenLoading(true);
@@ -119,42 +119,42 @@ export default function CartPage() {
         }
     }
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-    } = useForm();
+    // const {
+    //     register,
+    //     handleSubmit,
+    //     formState: { errors },
+    //     reset,
+    // } = useForm();
 
-    const onSubmit = handleSubmit((data) => {
-        // console.log(data);
-        const { message, ...user } = data;
-        const userInfo = {
-            data: {
-                user: user,
-                message,
-            },
-        }
-        checkOut(userInfo);
-    });
+    // const onSubmit = handleSubmit((data) => {
+    //     // console.log(data);
+    //     const { message, ...user } = data;
+    //     const userInfo = {
+    //         data: {
+    //             user: user,
+    //             message,
+    //         },
+    //     }
+    //     checkOut(userInfo);
+    // });
 
-    const checkOut = async (data) => {
-        setIsScreenLoading(true);
-        try {
-            await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, data);
-            // Toast.fire({
-            //     icon: "success",
-            //     title: "送出訂單成功"
-            // });
-            reset();
-            getCart();
-        } catch (error) {
-            void error;
-            alert("結帳失敗");
-        } finally {
-            setIsScreenLoading(false);
-        }
-    };
+    // const checkOut = async (data) => {
+    //     setIsScreenLoading(true);
+    //     try {
+    //         await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, data);
+    //         // Toast.fire({
+    //         //     icon: "success",
+    //         //     title: "送出訂單成功"
+    //         // });
+    //         reset();
+    //         getCart();
+    //     } catch (error) {
+    //         void error;
+    //         alert("結帳失敗");
+    //     } finally {
+    //         setIsScreenLoading(false);
+    //     }
+    // };
 
     useEffect(() => {
         getCart();
@@ -268,7 +268,7 @@ export default function CartPage() {
                                     <input
                                         type="text"
                                         className="form-control rounded-0 border-bottom border-top-0 border-start-0 border-end-0 shadow-none"
-                                        placeholder="Coupon Code"
+                                        placeholder="折扣碼"
                                         aria-label="Recipient's username"
                                         aria-describedby="button-addon2"
                                     />
@@ -296,17 +296,6 @@ export default function CartPage() {
                                                     小計
                                                 </th>
                                                 <td className="text-end border-0 px-0 pt-4">NT${cart.final_total?.toLocaleString()}</td>
-                                            </tr>
-                                            <tr>
-                                                <th
-                                                    scope="row"
-                                                    className="border-0 px-0 pt-0 pb-4 font-weight-normal"
-                                                >
-                                                    付款方式
-                                                </th>
-                                                <td className="text-end border-0 px-0 pt-0 pb-4">
-                                                    ApplePay
-                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

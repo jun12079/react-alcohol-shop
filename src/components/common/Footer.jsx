@@ -7,7 +7,7 @@ export default function Footer() {
 						<a href="./index.html">
 							<img
 								className="footer-logo-href"
-								src="/images/logo.png"
+								src="./images/logo.png"
 								alt="logo"
 							/>
 						</a>

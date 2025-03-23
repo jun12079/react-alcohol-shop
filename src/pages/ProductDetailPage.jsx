@@ -17,7 +17,7 @@ export default function ProductDetailPage() {
     const [product, setProduct] = useState({});
     const [qtySelect, setQtySelect] = useState(1);
     const [isScreenLoading, setIsScreenLoading] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const { id: product_id } = useParams();
     const swiperRef = useRef(null);
 
@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
     };
 
     const addCartItem = async (product_id, qty) => {
-        setIsLoading(true);
+        // setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/v2/api/${API_PATH}/cart`, {
                 data: {
@@ -98,7 +98,7 @@ export default function ProductDetailPage() {
             void error;
             alert("加入購物車失敗");
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
             setQtySelect(1);
         }
     };
@@ -237,19 +237,22 @@ export default function ProductDetailPage() {
                     <div className="row my-5">
                         <div className="col-md-4">
                             <p>
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-                                nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-                                erat, sed diam voluptua. At vero eos et accusam et
+                                {product.description}
                             </p>
                         </div>
                         <div className="col-md-3">
                             <p className="text-muted">
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-                                nonumy eirmod tempor
+                                (1) 飲酒過量，有害 (礙) 健康。
+                                <br />
+                                (2) 酒後不開車，安全有保障。
+                                <br />
+                                (3) 飲酒過量，害人害己。
+                                <br />
+                                (4) 未滿十八歲禁止飲酒。
                             </p>
                         </div>
                     </div>
-                    <h3 className="fw-bold">Lorem ipsum dolor sit amet</h3>
+                    <h3 className="fw-bold">猜你喜歡</h3>
                     <div ref={swiperRef} className="swiper mt-4 mb-5">
                         <div className="swiper-wrapper">
                             {products.map((product) => (

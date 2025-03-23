@@ -7,7 +7,7 @@ import { updateCartData } from "../../redux/cartSlice";
 const routes = [
 	{ path: "/", name: "首頁" },
 	{ path: "/products", name: "產品列表" },
-	{ path: "/login", name: "登入頁面" },
+	{ path: "/admin", name: "登入頁面" },
 	{ path: "/cart", name: "購物車" },
 ];
 
@@ -36,7 +36,7 @@ export default function Header() {
 		<nav className="navbar navbar-expand-lg navbar-light fixed-top bg-blur shadow-sm">
 			<div className="container">
 				<h1 className="logo">
-					<NavLink to="/" className="logo-href" style={{ backgroundImage: 'url(/images/logo.png)' }}>
+					<NavLink to="/" className="logo-href" style={{ backgroundImage: 'url(./images/logo.png)' }}>
 						home
 					</NavLink>
 				</h1>
