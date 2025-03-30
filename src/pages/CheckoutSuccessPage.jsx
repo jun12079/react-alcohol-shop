@@ -1,6 +1,29 @@
 import { Link } from "react-router-dom";
+import { useEffect, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { updateCartData } from "../redux/cartSlice";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 export default function CheckoutSuccessPage() {
+
+    const dispatch = useDispatch();
+    const getCart = useCallback(async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
+            dispatch(updateCartData(res.data.data));
+        } catch (error) {
+            void error;
+            alert("取得購物車失敗");
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        getCart();
+    }, [getCart]);
+
     return (
         <div className="container-fluid">
             <div className="position-relative d-flex">

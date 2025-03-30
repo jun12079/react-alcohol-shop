@@ -1,14 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 
 export default function CheckoutPaymentPage() {
 
     const [cart, setCart] = useState([]);
     const [orderData, setOrderData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const getCart = useCallback(async () => {
@@ -17,25 +31,27 @@ export default function CheckoutPaymentPage() {
             setCart(res.data.data);
         } catch (error) {
             void error;
-            alert("取得購物車失敗");
+            Toast.fire({
+                icon: "error",
+                title: "取得購物車失敗"
+            });
         }
     }, []);
 
     const checkOut = async () => {
-        // setIsScreenLoading(true);
+        setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, orderData);
-            // Toast.fire({
-            //     icon: "success",
-            //     title: "送出訂單成功"
-            // });
             localStorage.removeItem('orderData');
             navigate(`/checkout-success`);
         } catch (error) {
             void error;
-            alert("結帳失敗");
+            Toast.fire({
+                icon: "error",
+                title: "結帳失敗"
+            });
         } finally {
-            // setIsScreenLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -219,6 +235,7 @@ export default function CheckoutPaymentPage() {
                             type="button"
                             className="btn btn-dark py-3 px-7"
                             onClick={checkOut}
+                            disabled={isLoading}
                         >
                             付款
                         </button>

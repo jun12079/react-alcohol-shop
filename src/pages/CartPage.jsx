@@ -3,32 +3,32 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 import { Link, useNavigate } from "react-router-dom";
 import Swiper from "swiper";
+import Swal from "sweetalert2";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { useDispatch } from "react-redux";
 import { updateCartData } from "../redux/cartSlice";
 
-// import Swal from "sweetalert2";
-
-// const Toast = Swal.mixin({
-//     toast: true,
-//     position: "top-end",
-//     showConfirmButton: false,
-//     timer: 3000,
-//     timerProgressBar: true,
-//     didOpen: (toast) => {
-//         toast.onmouseenter = Swal.stopTimer;
-//         toast.onmouseleave = Swal.resumeTimer;
-//     }
-// });
-
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 
 export default function CartPage() {
 
     const [cart, setCart] = useState({});
     const [couponCode, setCouponCode] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [isScreenLoading, setIsScreenLoading] = useState(false);
     const [products, setProducts] = useState([]);
     const navigate = useNavigate();
@@ -120,31 +120,49 @@ export default function CartPage() {
         }
     }
 
-    const checkCoupon = () => {
-        if (couponCode !== "") {
-            handleCoupon(couponCode);
-        }
-    };
-
     const handleCoupon = async (couponCode) => {
+        setIsLoading(true);
         try {
-            await axios.post(`${BASE_URL}/api/${API_PATH}/coupon`, {
+            const res = await axios.post(`${BASE_URL}/api/${API_PATH}/coupon`, {
                 data: {
                     code: couponCode,
                 }
             });
-            alert("已使用優惠券");
+            if (res.data.success === false) {
+                Swal.fire({
+                    icon: "error",
+                    title: "錯誤",
+                    text: res.data.message
+                });
+                setCouponCode("");
+                return;
+            } else {
+                Toast.fire({
+                    icon: "success",
+                    title: res.data.message
+                });
+            }
             getCart();
         } catch (error) {
             console.log(error);
-            alert("優惠券使用失敗");
+            Swal.fire({
+                icon: "error",
+                title: "錯誤",
+                text: "使用優惠券失敗"
+            });
             setCouponCode("");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleCheckout = () => {
         if (!cart.carts || cart.carts.length === 0) {
-            alert("購物車內沒有商品");
+            Swal.fire({
+                icon: "error",
+                title: "錯誤",
+                text: "購物車內沒有商品"
+            });
         } else {
             navigate("/checkout-form");
         }
@@ -273,7 +291,8 @@ export default function CartPage() {
                                             className="btn btn-outline-dark border-bottom border-top-0 border-start-0 border-end-0 rounded-0"
                                             type="button"
                                             id="button-addon2"
-                                            onClick={checkCoupon}
+                                            onClick={() => { handleCoupon(couponCode); }}
+                                            disabled={isLoading}
                                         >
                                             <i className="fas fa-paper-plane"></i>
                                         </button>
