@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { pushMessage } from '../redux/toastSlice';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -10,7 +12,9 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 function CouponModal({ modalMode, tempCoupon, isCouponModalOpen, setIsCouponModalOpen, getCoupons }) {
 
     const [modalData, setModalData] = useState(tempCoupon);
+    const [isLoading, setIsLoading] = useState(false);
     const couponModalRef = useRef(null);
+    const dispatch = useDispatch();
 
     const handleCloseCouponModal = () => {
         const modalInstance = Modal.getInstance(couponModalRef.current);
@@ -36,6 +40,7 @@ function CouponModal({ modalMode, tempCoupon, isCouponModalOpen, setIsCouponModa
     }
 
     const createCoupon = async () => {
+        setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/coupon`, {
                 data: {
@@ -44,13 +49,19 @@ function CouponModal({ modalMode, tempCoupon, isCouponModalOpen, setIsCouponModa
                     is_enabled: modalData.is_enabled ? 1 : 0
                 }
             })
+            dispatch(pushMessage({ text: "優惠券新增成功", status: 'success' }))
         } catch (error) {
-            console.log(error)
-            alert('新增優惠券失敗')
+            // console.log(error)
+            // alert('新增優惠券失敗')
+            const { message } = error.response.data;
+            dispatch(pushMessage({ text: message.join("、"), status: 'failed' }));
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const updateCoupon = async () => {
+        setIsLoading(true);
         try {
             await axios.put(`${BASE_URL}/v2/api/${API_PATH}/admin/coupon/${modalData.id}`, {
                 data: {
@@ -59,9 +70,14 @@ function CouponModal({ modalMode, tempCoupon, isCouponModalOpen, setIsCouponModa
                     is_enabled: modalData.is_enabled ? 1 : 0
                 }
             })
+            dispatch(pushMessage({ text: "優惠券更新成功", status: 'success' }))
         } catch (error) {
-            console.log(error)
-            alert('更新優惠券失敗')
+            // console.log(error)
+            // alert('更新優惠券失敗')
+            const { message } = error.response.data;
+            dispatch(pushMessage({ text: message.join("、"), status: 'failed' }));
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -155,7 +171,7 @@ function CouponModal({ modalMode, tempCoupon, isCouponModalOpen, setIsCouponModa
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={handleCloseCouponModal}>取消</button>
-                        <button type="button" className="btn btn-primary" onClick={handleUpadteCoupon}>確認</button>
+                        <button type="button" className="btn btn-primary" onClick={handleUpadteCoupon} disabled={isLoading}>確認</button>
                     </div>
                 </div>
             </div>

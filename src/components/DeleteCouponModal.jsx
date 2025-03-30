@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import PropTypes from 'prop-types';
@@ -8,9 +8,11 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function DeleteCouponModal({ tempCoupon, isDeleteCouponModalOpen, setIsDeleteCouponModalOpen, getCoupons }) {
 
+    const [isLoading, setIsLoading] = useState(false);
     const delCouponModalRef = useRef(null);
 
     const handleDeleteCoupon = async () => {
+        setIsLoading(true);
         try {
             await deleteCoupon();
             getCoupons();
@@ -18,6 +20,8 @@ function DeleteCouponModal({ tempCoupon, isDeleteCouponModalOpen, setIsDeleteCou
         } catch (error) {
             console.log(error)
             alert('刪除產品失敗')
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -64,7 +68,7 @@ function DeleteCouponModal({ tempCoupon, isDeleteCouponModalOpen, setIsDeleteCou
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={handleCloseDelCouponModal}>取消</button>
-                        <button type="button" className="btn btn-danger" onClick={handleDeleteCoupon}>刪除</button>
+                        <button type="button" className="btn btn-danger" onClick={handleDeleteCoupon} disabled={isLoading}>刪除</button>
                     </div>
                 </div>
             </div>

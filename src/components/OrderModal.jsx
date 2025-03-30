@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { pushMessage } from '../redux/toastSlice';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -10,7 +12,9 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 function OrderModal({ tempOrder, isOrderModalOpen, setIsOrderModalOpen, getOrders }) {
 
     const [modalData, setModalData] = useState(tempOrder);
+    const [isLoading, setIsLoading] = useState(false);
     const orderModalRef = useRef(null);
+    const dispatch = useDispatch();
 
     const handleCloseOrderModal = () => {
         const modalInstance = Modal.getInstance(orderModalRef.current);
@@ -35,6 +39,7 @@ function OrderModal({ tempOrder, isOrderModalOpen, setIsOrderModalOpen, getOrder
     }
 
     const updateOrder = async () => {
+        setIsLoading(true);
         try {
             await axios.put(`${BASE_URL}/v2/api/${API_PATH}/admin/order/${modalData.id}`, {
                 data: {
@@ -42,9 +47,14 @@ function OrderModal({ tempOrder, isOrderModalOpen, setIsOrderModalOpen, getOrder
                     is_paid: modalData.is_paid ? true : false
                 }
             })
+            dispatch(pushMessage({ text: "訂單更新成功", status: 'success' }))
         } catch (error) {
-            console.log(error)
-            alert('更新產品失敗')
+            // console.log(error)
+            // alert('更新產品失敗')
+            const { message } = error.response.data;
+            dispatch(pushMessage({ text: message.join("、"), status: 'failed' }));
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -215,7 +225,7 @@ function OrderModal({ tempOrder, isOrderModalOpen, setIsOrderModalOpen, getOrder
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={handleCloseOrderModal}>取消</button>
-                        <button type="button" className="btn btn-primary" onClick={handleUpadteOrder}>確認</button>
+                        <button type="button" className="btn btn-primary" onClick={handleUpadteOrder} disabled={isLoading}>確認</button>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import PropTypes from 'prop-types';
@@ -8,9 +8,11 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function DeleteOrderModal({ deleteMode, tempOrder, isDeleteOrderModalOpen, setIsDeleteOrderModalOpen, getOrders }) {
 
+    const [isLoading, setIsLoading] = useState(false);
     const delProductModalRef = useRef(null);
 
     const handleDeleteOrder = async () => {
+        setIsLoading(true);
         try {
             await deleteOrder();
             getOrders();
@@ -18,6 +20,8 @@ function DeleteOrderModal({ deleteMode, tempOrder, isDeleteOrderModalOpen, setIs
         } catch (error) {
             console.log(error)
             alert('刪除訂單失敗')
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -102,7 +106,7 @@ function DeleteOrderModal({ deleteMode, tempOrder, isDeleteOrderModalOpen, setIs
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={handleCloseDelOrderModal}>取消</button>
-                            <button type="button" className="btn btn-danger" onClick={handleDeleteAllOrder}>刪除</button>
+                            <button type="button" className="btn btn-danger" onClick={handleDeleteAllOrder} disabled={isLoading}>刪除</button>
                         </div>
                     </div>
                 </div>

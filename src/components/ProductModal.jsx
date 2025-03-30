@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { pushMessage } from '../redux/toastSlice';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -10,7 +12,9 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 function ProductModal({ modalMode, tempProduct, isProductModalOpen, setIsProductModalOpen, getProducts }) {
 
     const [modalData, setModalData] = useState(tempProduct);
+    const [isLoading, setIsLoading] = useState(false);
     const productModalRef = useRef(null);
+    const dispatch = useDispatch();
 
     const handleCloseProductModal = () => {
         const modalInstance = Modal.getInstance(productModalRef.current);
@@ -56,6 +60,7 @@ function ProductModal({ modalMode, tempProduct, isProductModalOpen, setIsProduct
     }
 
     const createProduct = async () => {
+        setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/product`, {
                 data: {
@@ -65,13 +70,19 @@ function ProductModal({ modalMode, tempProduct, isProductModalOpen, setIsProduct
                     is_enabled: modalData.is_enabled ? 1 : 0
                 }
             })
+            dispatch(pushMessage({ text: "產品新增成功", status: 'success' }))
         } catch (error) {
-            console.log(error)
-            alert('新增產品失敗')
+            // console.log(error)
+            // alert('新增產品失敗')
+            const { message } = error.response.data;
+            dispatch(pushMessage({ text: message.join("、"), status: 'failed' }));
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const updateProduct = async () => {
+        setIsLoading(true);
         try {
             await axios.put(`${BASE_URL}/v2/api/${API_PATH}/admin/product/${modalData.id}`, {
                 data: {
@@ -81,9 +92,14 @@ function ProductModal({ modalMode, tempProduct, isProductModalOpen, setIsProduct
                     is_enabled: modalData.is_enabled ? 1 : 0
                 }
             })
+            dispatch(pushMessage({ text: "編輯產品成功", status: 'success' }))
         } catch (error) {
-            console.log(error)
-            alert('更新產品失敗')
+            // console.log(error)
+            // alert('更新產品失敗')
+            const { message } = error.response.data;
+            dispatch(pushMessage({ text: message.join("、"), status: 'failed' }));
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -240,7 +256,7 @@ function ProductModal({ modalMode, tempProduct, isProductModalOpen, setIsProduct
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={handleCloseProductModal}>取消</button>
-                        <button type="button" className="btn btn-primary" onClick={handleUpadteProduct}>確認</button>
+                        <button type="button" className="btn btn-primary" onClick={handleUpadteProduct} disabled={isLoading}>確認</button>
                     </div>
                 </div>
             </div>

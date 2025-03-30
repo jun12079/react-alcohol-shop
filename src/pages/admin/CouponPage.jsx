@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import ReactLoading from "react-loading";
 import Pagination from '../../components/Pagination';
 import CouponModal from "../../components/CouponModal";
 import DeleteCouponModal from '../../components/DeleteCouponModal';
+import Toast from '../../components/Toast';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -19,18 +21,22 @@ function CouponPage() {
 
     const [coupons, setCoupons] = useState([])
     const [modalMode, setModalMode] = useState(null);
+    const [isScreenLoading, setIsScreenLoading] = useState(false);
     const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
     const [isDeleteCouponModalOpen, setIsDeleteCouponModalOpen] = useState(false);
 
     const [tempCoupon, setTempCoupon] = useState(defaultModalState)
 
     const getCoupons = async (page = 1) => {
+        setIsScreenLoading(true);
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/admin/coupons?page=${page}`)
             setCoupons(res.data.coupons)
             setPageInfo(res.data.pagination)
         } catch (error) {
             console.log(error)
+        } finally {
+            setIsScreenLoading(false);
         }
     }
 
@@ -116,9 +122,24 @@ function CouponPage() {
                     <Pagination pageInfo={pageInfo} handlePageChange={handlePageChange} />
                 </div>
             </div>
-
+            {
+                isScreenLoading && (
+                    <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{
+                            position: "fixed",
+                            inset: 0,
+                            backgroundColor: "rgba(255,255,255,0.3)",
+                            zIndex: 999,
+                        }}
+                    >
+                        <ReactLoading type="spin" color="black" width="4rem" height="4rem" />
+                    </div>
+                )
+            }
             <CouponModal modalMode={modalMode} tempCoupon={tempCoupon} isCouponModalOpen={isCouponModalOpen} setIsCouponModalOpen={setIsCouponModalOpen} getCoupons={getCoupons} />
-            <DeleteCouponModal tempCoupon={tempCoupon} isDeleteCouponModalOpen={isDeleteCouponModalOpen} setIsDeleteCouponModalOpen={setIsDeleteCouponModalOpen}  getCoupons={getCoupons} />
+            <DeleteCouponModal tempCoupon={tempCoupon} isDeleteCouponModalOpen={isDeleteCouponModalOpen} setIsDeleteCouponModalOpen={setIsDeleteCouponModalOpen} getCoupons={getCoupons} />
+            <Toast />
         </>
     );
 }
