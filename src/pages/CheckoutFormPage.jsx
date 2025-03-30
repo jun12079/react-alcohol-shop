@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -14,7 +14,8 @@ export default function CheckoutFormPage() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const getCart = async () => {
+
+    const getCart = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
             setCart(res.data.data);
@@ -23,7 +24,7 @@ export default function CheckoutFormPage() {
             void error;
             alert("取得購物車失敗");
         }
-    };
+    }, [dispatch]);
 
     const {
         register,
@@ -46,7 +47,7 @@ export default function CheckoutFormPage() {
 
     useEffect(() => {
         getCart();
-    }, []);
+    }, [getCart]);
 
     return (
         <>

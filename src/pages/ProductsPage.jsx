@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import ReactLoading from "react-loading";
 import { Link } from "react-router-dom";
@@ -64,7 +64,7 @@ export default function ProductsPage() {
         getAllProducts();
     }, []);
 
-    const getProducts = async (page = 1) => {
+    const getProducts =useCallback( async (page = 1) => {
         setIsScreenLoading(true);
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/products?page=${page}&category=${selectedCategory === "全部" ? "" : selectedCategory}`);
@@ -76,10 +76,10 @@ export default function ProductsPage() {
         } finally {
             setIsScreenLoading(false);
         }
-    };
+    }, [selectedCategory]);
     useEffect(() => {
         getProducts();
-    }, [selectedCategory]);
+    }, [getProducts]);
 
     const handlePageChange = (page) => {
         getProducts(page);

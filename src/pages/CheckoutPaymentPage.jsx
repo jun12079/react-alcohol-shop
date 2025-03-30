@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,7 +11,7 @@ export default function CheckoutPaymentPage() {
     const [orderData, setOrderData] = useState(null);
     const navigate = useNavigate();
 
-    const getCart = async () => {
+    const getCart = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
             setCart(res.data.data);
@@ -19,7 +19,7 @@ export default function CheckoutPaymentPage() {
             void error;
             alert("取得購物車失敗");
         }
-    };
+    }, []);
 
     const checkOut = async () => {
         // setIsScreenLoading(true);
@@ -47,11 +47,11 @@ export default function CheckoutPaymentPage() {
             // 如果沒有訂單資訊，退回訂單頁
             navigate('/checkout-form');
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         getCart();
-    }, []);
+    }, [getCart]);
 
     return (
         <div className="container" style={{ paddingTop: "64px" }}>

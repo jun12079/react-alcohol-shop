@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ReactLoading from "react-loading";
 import { Link, useParams } from "react-router-dom";
@@ -39,7 +39,8 @@ export default function ProductDetailPage() {
     });
 
     const dispatch = useDispatch();
-    const getCart = async () => {
+
+    const getCart = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
             dispatch(updateCartData(res.data.data));
@@ -47,12 +48,12 @@ export default function ProductDetailPage() {
             void error;
             alert("取得購物車失敗");
         }
-    };
+    }, [dispatch]);
 
     useEffect(() => {
-            getCart();
-            getProducts();
-        }, []);
+        getCart();
+        getProducts();
+    }, [getCart]);
 
     useEffect(() => {
         const getProduct = async () => {
@@ -67,9 +68,10 @@ export default function ProductDetailPage() {
                 setIsScreenLoading(false);
             }
         };
-        getProduct();
-        getProducts();
-    }, []);
+        if (product_id) {
+            getProduct();
+        }
+    }, [product_id]);
 
     const getProducts = async () => {
         setIsScreenLoading(true);

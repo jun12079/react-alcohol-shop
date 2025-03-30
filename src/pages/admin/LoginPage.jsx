@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -34,14 +34,16 @@ function LoginPage() {
         }
     }
 
-    const checkUserLogin = async () => {
+
+    const checkUserLogin = useCallback(async () => {
         try {
             await axios.post(`${BASE_URL}/v2/api/user/check`);
             navigate('/admin');
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error)
         }
-    }
+    }, [navigate]);
 
     useEffect(() => {
         const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, "$1");
@@ -49,7 +51,7 @@ function LoginPage() {
             axios.defaults.headers.common['Authorization'] = token;
             checkUserLogin();
         }
-    }, []);
+    }, [checkUserLogin]);
 
     return (
         <>

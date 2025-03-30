@@ -18,19 +18,18 @@ export default function Header() {
 	const carts = useSelector((state) => state.cart.carts);
 	const dispatch = useDispatch();
 
-	const getCart = async () => {
-		try {
-			const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
-			dispatch(updateCartData(res.data.data));
-		} catch (error) {
-			void error;
-			alert("取得購物車失敗");
-		}
-	};
-
 	useEffect(() => {
+		const getCart = async () => {
+			try {
+				const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
+				dispatch(updateCartData(res.data.data));
+			} catch (error) {
+				void error;
+				alert("取得購物車失敗");
+			}
+		};
 		getCart();
-	}, []);
+	}, [dispatch]);
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light fixed-top bg-blur shadow-sm">

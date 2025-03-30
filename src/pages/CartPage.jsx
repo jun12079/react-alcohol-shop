@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
-// import { useForm } from "react-hook-form";
 import ReactLoading from "react-loading";
 import { Link, useNavigate } from "react-router-dom";
 import Swiper from "swiper";
@@ -53,7 +52,7 @@ export default function CartPage() {
     });
 
     const dispatch = useDispatch();
-    const getCart = async () => {
+    const getCart = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/cart`);
             setCart(res.data.data);
@@ -62,9 +61,9 @@ export default function CartPage() {
             void error;
             alert("取得購物車失敗");
         }
-    };
+    }, [dispatch]);
 
-    const getProducts = async () => {
+    const getProducts = useCallback(async () => {
         setIsScreenLoading(true);
         try {
             const res = await axios.get(`${BASE_URL}/v2/api/${API_PATH}/products`);
@@ -75,7 +74,7 @@ export default function CartPage() {
         } finally {
             setIsScreenLoading(false);
         }
-    };
+    }, []);
 
     const updateCartItem = async (cartItem_id, product_id, qty) => {
         setIsScreenLoading(true);
@@ -151,47 +150,10 @@ export default function CartPage() {
         }
     };
 
-    // const {
-    //     register,
-    //     handleSubmit,
-    //     formState: { errors },
-    //     reset,
-    // } = useForm();
-
-    // const onSubmit = handleSubmit((data) => {
-    //     // console.log(data);
-    //     const { message, ...user } = data;
-    //     const userInfo = {
-    //         data: {
-    //             user: user,
-    //             message,
-    //         },
-    //     }
-    //     checkOut(userInfo);
-    // });
-
-    // const checkOut = async (data) => {
-    //     setIsScreenLoading(true);
-    //     try {
-    //         await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, data);
-    //         // Toast.fire({
-    //         //     icon: "success",
-    //         //     title: "送出訂單成功"
-    //         // });
-    //         reset();
-    //         getCart();
-    //     } catch (error) {
-    //         void error;
-    //         alert("結帳失敗");
-    //     } finally {
-    //         setIsScreenLoading(false);
-    //     }
-    // };
-
     useEffect(() => {
         getCart();
         getProducts();
-    }, []);
+    }, [getCart, getProducts]);
 
     return (
         <>
@@ -277,7 +239,7 @@ export default function CartPage() {
                                                     </div>
                                                 </td>
                                                 <td className="border-0 align-middle">
-                                                    <p className="mb-0 ms-auto">NT${cartItem.final_total.toLocaleString()}</p>
+                                                    <p className="mb-0 ms-auto">NT${cartItem.total.toLocaleString()}</p>
                                                 </td>
                                                 <td className="border-0 align-middle">
                                                     <button
