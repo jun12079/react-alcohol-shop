@@ -4,7 +4,7 @@ export default function Footer() {
 			<div className="bg-dark py-1">
 				<div className="container">
 					<div className="d-flex align-items-center justify-content-between text-white">
-						<a href="./index.html">
+						<a href="/">
 							<img
 								className="footer-logo-href"
 								src="./images/logo.png"

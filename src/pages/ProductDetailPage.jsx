@@ -3,6 +3,7 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 import { Link, useParams } from "react-router-dom";
 import Swiper from "swiper";
+import Swal from "sweetalert2";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { useDispatch } from "react-redux";
@@ -11,13 +12,25 @@ import { updateCartData } from "../redux/cartSlice";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+
 export default function ProductDetailPage() {
 
     const [products, setProducts] = useState([]);
     const [product, setProduct] = useState({});
     const [qtySelect, setQtySelect] = useState(1);
     const [isScreenLoading, setIsScreenLoading] = useState(false);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const { id: product_id } = useParams();
     const swiperRef = useRef(null);
 
@@ -87,7 +100,7 @@ export default function ProductDetailPage() {
     };
 
     const addCartItem = async (product_id, qty) => {
-        // setIsLoading(true);
+        setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/v2/api/${API_PATH}/cart`, {
                 data: {
@@ -95,12 +108,16 @@ export default function ProductDetailPage() {
                     qty: Number(qty),
                 },
             });
+            Toast.fire({
+                icon: "success",
+                title: "加入購物車成功"
+            });
             getCart();
         } catch (error) {
             void error;
             alert("加入購物車失敗");
         } finally {
-            // setIsLoading(false);
+            setIsLoading(false);
             setQtySelect(1);
         }
     };
@@ -124,45 +141,24 @@ export default function ProductDetailPage() {
                                             alt={product.title}
                                         />
                                     </div>
-                                    <div className="carousel-item">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1916&q=80"
-                                            className="d-block w-100"
-                                            alt="..."
-                                        />
-                                    </div>
-                                    <div className="carousel-item">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1916&q=80"
-                                            className="d-block w-100"
-                                            alt="..."
-                                        />
-                                    </div>
+                                    {product.imagesUrl?.map((image, index) => (
+                                        <div key={index} className="carousel-item">
+                                            <img
+                                                src={image}
+                                                className="d-block w-100"
+                                                alt={product.title}
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
-                                <a
-                                    className="carousel-control-prev"
-                                    href="#carouselExampleControls"
-                                    role="button"
-                                    data-slide="prev"
-                                >
-                                    <span
-                                        className="carousel-control-prev-icon"
-                                        aria-hidden="true"
-                                    ></span>
-                                    <span className="sr-only">Previous</span>
-                                </a>
-                                <a
-                                    className="carousel-control-next"
-                                    href="#carouselExampleControls"
-                                    role="button"
-                                    data-slide="next"
-                                >
-                                    <span
-                                        className="carousel-control-next-icon"
-                                        aria-hidden="true"
-                                    ></span>
-                                    <span className="sr-only">Next</span>
-                                </a>
+                                <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span className="visually-hidden">Previous</span>
+                                </button>
+                                <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span className="visually-hidden">Next</span>
+                                </button>
                             </div>
                         </div>
                         <div className="col-md-5">
@@ -229,6 +225,7 @@ export default function ProductDetailPage() {
                                         onClick={() => addCartItem(product_id, qtySelect)}
                                         type="button"
                                         className="text-nowrap btn btn-dark w-100 py-2"
+                                        disabled={isLoading}
                                     >
                                         加入購物車
                                     </button>
