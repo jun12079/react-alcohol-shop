@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-function LoginPage({ setIsAuth }) {
+function LoginPage() {
+    const navigate = useNavigate();
 
     const [account, setAccount] = useState({
         "username": "",
@@ -26,7 +28,7 @@ function LoginPage({ setIsAuth }) {
             const { token, expired } = res.data;
             document.cookie = `hexToken=${token}; expires=${new Date(expired)};`;
             axios.defaults.headers.common['Authorization'] = token;
-            setIsAuth(true);
+            navigate('/admin');
         } catch (error) {
             console.log(error)
         }
@@ -35,7 +37,7 @@ function LoginPage({ setIsAuth }) {
     const checkUserLogin = async () => {
         try {
             await axios.post(`${BASE_URL}/v2/api/user/check`);
-            setIsAuth(true);
+            navigate('/admin');
         } catch (error) {
             console.log(error)
         }

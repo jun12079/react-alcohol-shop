@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 // import { useForm } from "react-hook-form";
 import ReactLoading from "react-loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swiper from "swiper";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -29,10 +29,12 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 export default function CartPage() {
 
     const [cart, setCart] = useState({});
+    const [couponCode, setCouponCode] = useState("");
     const [isScreenLoading, setIsScreenLoading] = useState(false);
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
     const swiperRef = useRef(null);
-    
+
     new Swiper(swiperRef.current, {
         modules: [Autoplay],
         loop: true,
@@ -118,6 +120,36 @@ export default function CartPage() {
             setIsScreenLoading(false);
         }
     }
+
+    const checkCoupon = () => {
+        if (couponCode !== "") {
+            handleCoupon(couponCode);
+        }
+    };
+
+    const handleCoupon = async (couponCode) => {
+        try {
+            await axios.post(`${BASE_URL}/api/${API_PATH}/coupon`, {
+                data: {
+                    code: couponCode,
+                }
+            });
+            alert("已使用優惠券");
+            getCart();
+        } catch (error) {
+            console.log(error);
+            alert("優惠券使用失敗");
+            setCouponCode("");
+        }
+    };
+
+    const handleCheckout = () => {
+        if (!cart.carts || cart.carts.length === 0) {
+            alert("購物車內沒有商品");
+        } else {
+            navigate("/checkout-form");
+        }
+    };
 
     // const {
     //     register,
@@ -271,12 +303,15 @@ export default function CartPage() {
                                         placeholder="折扣碼"
                                         aria-label="Recipient's username"
                                         aria-describedby="button-addon2"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
                                     />
                                     <div className="input-group-append">
                                         <button
                                             className="btn btn-outline-dark border-bottom border-top-0 border-start-0 border-end-0 rounded-0"
                                             type="button"
                                             id="button-addon2"
+                                            onClick={checkCoupon}
                                         >
                                             <i className="fas fa-paper-plane"></i>
                                         </button>
@@ -295,7 +330,7 @@ export default function CartPage() {
                                                 >
                                                     小計
                                                 </th>
-                                                <td className="text-end border-0 px-0 pt-4">NT${cart.final_total?.toLocaleString()}</td>
+                                                <td className="text-end border-0 px-0 pt-4">NT${cart.total?.toLocaleString()}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -303,9 +338,16 @@ export default function CartPage() {
                                         <p className="mb-0 h4 fw-bold">總計</p>
                                         <p className="mb-0 h4 fw-bold">NT${cart.final_total?.toLocaleString()}</p>
                                     </div>
-                                    <Link to="/checkout-form" className="btn btn-dark w-100 mt-4">
+                                    <button
+                                        type="button"
+                                        className="btn btn-dark w-100 mt-4"
+                                        onClick={handleCheckout}
+                                    >
                                         前往結帳
-                                    </Link>
+                                    </button>
+                                    {/* <Link to="/checkout-form" className="btn btn-dark w-100 mt-4">
+                                        前往結帳
+                                    </Link> */}
                                 </div>
                             </div>
                         </div>
@@ -360,189 +402,4 @@ export default function CartPage() {
             }
         </>
     );
-
-    // return (
-    //     <div className="container">
-    //         <div>
-    //             {
-    //                 cart.carts?.length > 0 && (
-    //                     <div>
-    //                         <div className="d-flex justify-content-between align-items-center mb-3">
-    //                             <h3>購物車</h3>
-    //                             <button
-    //                                 onClick={removeCart}
-    //                                 className="btn btn-outline-danger">清空購物車
-    //                             </button>
-    //                         </div>
-    //                         <table className="table align-middle">
-    //                             <thead>
-    //                                 <tr>
-    //                                     <th></th>
-    //                                     <th>品名</th>
-    //                                     <th style={{ width: "150px" }}>數量/單位</th>
-    //                                     <th className="text-end">單價</th>
-    //                                 </tr>
-    //                             </thead>
-
-    //                             <tbody>
-    //                                 {cart.carts?.map((cartItem) => {
-    //                                     return (
-    //                                         <tr key={cartItem.id}>
-    //                                             <td>
-    //                                                 <button
-    //                                                     onClick={() => {
-    //                                                         removeCartItem(cartItem.id);
-    //                                                     }}
-    //                                                     type="button"
-    //                                                     className="btn btn-outline-danger btn-sm"
-    //                                                 >
-    //                                                     x
-    //                                                 </button>
-    //                                             </td>
-    //                                             <td>{cartItem.product.title}</td>
-    //                                             <td style={{ width: "150px" }}>
-    //                                                 <div className="d-flex align-items-center">
-    //                                                     <div className="btn-group me-2" role="group">
-    //                                                         <button
-    //                                                             onClick={() => {
-    //                                                                 updateCartItem(cartItem.id, cartItem.product.id, cartItem.qty - 1);
-    //                                                             }}
-    //                                                             type="button"
-    //                                                             className="btn btn-outline-dark btn-sm" disabled={cartItem.qty === 1}
-    //                                                         >
-    //                                                             -
-    //                                                         </button>
-    //                                                         <span
-    //                                                             className="btn border border-dark"
-    //                                                             style={{ width: "50px", cursor: "auto" }}
-    //                                                         >{cartItem.qty}</span>
-    //                                                         <button
-    //                                                             onClick={() => {
-    //                                                                 updateCartItem(cartItem.id, cartItem.product.id, cartItem.qty + 1);
-    //                                                             }}
-    //                                                             type="button"
-    //                                                             className="btn btn-outline-dark btn-sm"
-    //                                                         >
-    //                                                             +
-    //                                                         </button>
-    //                                                     </div>
-    //                                                     <span className="input-group-text bg-transparent border-0">
-    //                                                         {cartItem.product.unit}
-    //                                                     </span>
-    //                                                 </div>
-    //                                             </td>
-    //                                             <td className="text-end">{cartItem.total}</td>
-    //                                         </tr>
-    //                                     );
-    //                                 })}
-    //                             </tbody>
-    //                             <tfoot>
-    //                                 <tr>
-    //                                     <td colSpan="3" className="text-end">
-    //                                         總計：
-    //                                     </td>
-    //                                     <td className="text-end" style={{ width: "130px" }}>{cart.final_total}</td>
-    //                                 </tr>
-    //                             </tfoot>
-    //                         </table>
-    //                     </div>
-    //                 )
-    //             }
-    //         </div>
-    //         < h3 className="mb-4" > 填寫訂單資料</h3 >
-    //         <div className="row justify-content-center">
-    //             <form
-    //                 onSubmit={onSubmit}
-    //                 className="col-md-6"
-    //             >
-    //                 <div className="mb-3">
-    //                     <label htmlFor="email" className="form-label">Email</label>
-    //                     <input
-    //                         {...register("email", {
-    //                             required: "Email欄位必填",
-    //                             pattern: {
-    //                                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-    //                                 message: "Email格式不正確",
-    //                             }
-    //                         })}
-    //                         id="email"
-    //                         type="email"
-    //                         className={`form-control ${errors.email ? "is-invalid" : ""}`}
-    //                         placeholder="請輸入Email"
-    //                     />
-    //                     {errors.email && <p className="text-danger my-2">{errors.email.message}</p>}
-    //                 </div>
-    //                 <div className="mb-3">
-    //                     <label htmlFor="name" className="form-label">收件人姓名</label>
-    //                     <input
-    //                         {...register("name", {
-    //                             required: "姓名欄位必填",
-    //                         })}
-    //                         id="name"
-    //                         type="text"
-    //                         className={`form-control ${errors.name ? "is-invalid" : ""}`}
-    //                         placeholder="請輸入姓名"
-    //                     />
-    //                     {errors.name && <p className="text-danger my-2">{errors.name.message}</p>}
-    //                 </div>
-    //                 <div className="mb-3">
-    //                     <label htmlFor="tel" className="form-label">收件人電話</label>
-    //                     <input
-    //                         {...register("tel", {
-    //                             required: "電話欄位必填",
-    //                             pattern: {
-    //                                 value: /^(0[2-8]\d{7}|09\d{8})$/,
-    //                                 message: "電話格式不正確",
-    //                             }
-    //                         })}
-    //                         id="tel"
-    //                         type="tel"
-    //                         className={`form-control ${errors.tel ? "is-invalid" : ""}`}
-    //                         placeholder="請輸入電話"
-    //                     />
-    //                     {errors.tel && <p className="text-danger my-2">{errors.tel.message}</p>}
-    //                 </div>
-    //                 <div className="mb-3">
-    //                     <label htmlFor="address" className="form-label">收件人地址</label>
-    //                     <input
-    //                         {...register("address", {
-    //                             required: "地址欄位必填",
-    //                         })}
-    //                         id="address"
-    //                         type="text"
-    //                         className={`form-control ${errors.address ? "is-invalid" : ""}`}
-    //                         placeholder="請輸入地址"
-    //                     />
-    //                     {errors.address && <p className="text-danger my-2">{errors.address.message}</p>}
-    //                 </div>
-    //                 <div className="mb-3">
-    //                     <label htmlFor="message" className="form-label">留言</label>
-    //                     <textarea
-    //                         {...register("message")}
-    //                         id="message"
-    //                         className="form-control"
-    //                         cols="30"
-    //                         rows="10">
-    //                     </textarea>
-    //                 </div>
-    //                 <button type="submit" className="btn btn-primary" disabled={cart.carts?.length === 0}>送出訂單</button>
-    //             </form>
-    //         </div>
-    //         {
-    //             isScreenLoading && (
-    //                 <div
-    //                     className="d-flex justify-content-center align-items-center"
-    //                     style={{
-    //                         position: "fixed",
-    //                         inset: 0,
-    //                         backgroundColor: "rgba(255,255,255,0.3)",
-    //                         zIndex: 999,
-    //                     }}
-    //                 >
-    //                     <ReactLoading type="spin" color="black" width="4rem" height="4rem" />
-    //                 </div>
-    //             )
-    //         }
-    //     </div>
-    // );
 }

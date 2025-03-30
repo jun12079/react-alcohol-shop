@@ -7,7 +7,7 @@ import { updateCartData } from "../../redux/cartSlice";
 const routes = [
 	{ path: "/", name: "首頁" },
 	{ path: "/products", name: "產品列表" },
-	{ path: "/admin", name: "登入頁面" },
+	{ path: "/login", name: "登入頁面" },
 	{ path: "/cart", name: "購物車" },
 ];
 

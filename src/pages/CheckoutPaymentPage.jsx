@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -8,6 +8,8 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 export default function CheckoutPaymentPage() {
 
     const [cart, setCart] = useState([]);
+    const [orderData, setOrderData] = useState(null);
+    const navigate = useNavigate();
 
     const getCart = async () => {
         try {
@@ -18,6 +20,34 @@ export default function CheckoutPaymentPage() {
             alert("取得購物車失敗");
         }
     };
+
+    const checkOut = async () => {
+        // setIsScreenLoading(true);
+        try {
+            await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, orderData);
+            // Toast.fire({
+            //     icon: "success",
+            //     title: "送出訂單成功"
+            // });
+            localStorage.removeItem('orderData');
+            navigate(`/checkout-success`);
+        } catch (error) {
+            void error;
+            alert("結帳失敗");
+        } finally {
+            // setIsScreenLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const savedData = localStorage.getItem('orderData');
+        if (savedData) {
+            setOrderData(JSON.parse(savedData));
+        } else {
+            // 如果沒有訂單資訊，退回訂單頁
+            navigate('/checkout-form');
+        }
+    }, []);
 
     useEffect(() => {
         getCart();
@@ -81,7 +111,7 @@ export default function CheckoutPaymentPage() {
                                     >
                                         小計
                                     </th>
-                                    <td className="text-end border-0 px-0 pt-4">NT${cart.final_total?.toLocaleString()}</td>
+                                    <td className="text-end border-0 px-0 pt-4">NT${cart.total?.toLocaleString()}</td>
                                 </tr>
                                 <tr>
                                     <th
@@ -115,6 +145,14 @@ export default function CheckoutPaymentPage() {
                                     現金支付
                                 </p>
                             </div>
+                            <div id="collapseOne" className="collapse show" aria-labelledby="headingOne"
+                                data-bs-parent="#accordionExample">
+                                <div className="card-body bg-light ps-5 py-4">
+                                    <div className="mb-2">
+                                        <p>使用現金付款</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="card rounded-0">
                             <div
@@ -126,7 +164,7 @@ export default function CheckoutPaymentPage() {
                                 aria-controls="collapseTwo"
                             >
                                 <p className="mb-0 position-relative custom-checkout-label">
-                                    Apple Pay
+                                    信用卡付款
                                 </p>
                             </div>
                             <div
@@ -144,7 +182,7 @@ export default function CheckoutPaymentPage() {
                                             type="text"
                                             className="form-control"
                                             id="Lorem ipsum1"
-                                            placeholder="Lorem ipsum"
+                                            placeholder="請輸入信用卡卡號"
                                         />
                                     </div>
                                 </div>
@@ -163,15 +201,30 @@ export default function CheckoutPaymentPage() {
                                     Line Pay
                                 </p>
                             </div>
+                            <div id="collapseThree" className="collapse" aria-labelledby="headingThree"
+                                data-bs-parent="#accordionExample">
+                                <div className="card-body bg-light ps-5 py-4">
+                                    <div className="mb-2">
+                                        <p>使用Line Pay行動支付</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="d-flex flex-column-reverse flex-md-row mt-4 justify-content-between align-items-md-center align-items-end w-100">
                         <Link to="/checkout-form" className="text-dark mt-md-0 mt-3">
                             <i className="fas fa-chevron-left me-2"></i> 上一步
                         </Link>
-                        <Link to="/checkout-success" className="btn btn-dark py-3 px-7">
+                        <button
+                            type="button"
+                            className="btn btn-dark py-3 px-7"
+                            onClick={checkOut}
+                        >
                             付款
-                        </Link>
+                        </button>
+                        {/* <Link to="/checkout-success" className="btn btn-dark py-3 px-7">
+                            付款
+                        </Link> */}
                     </div>
                 </div>
             </div>
