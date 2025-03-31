@@ -69,7 +69,7 @@ function LoginPage() {
                             <div className="text-center mb-4">
                                 <h1 className="logo">
                                     <NavLink to="/" className="logo-href" style={{
-                                        backgroundImage: 'url(../public/images/logo.png)',
+                                        backgroundImage: 'url(./images/logo.png)',
                                         margin: '0 auto',
                                     }}>
                                         home
