@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -55,23 +56,55 @@ function LoginPage() {
 
     return (
         <>
-            <div className="container">
-                <div className="row justify-content-center mt-5">
-                    <div className="col-6">
-                        <div className="card">
-                            <div className="card-body">
-                                <form onSubmit={handleLogin}>
-                                    <div className="mb-3">
-                                        <label htmlFor="username" className="form-label">Username</label>
-                                        <input type="email" className="form-control" id="username" name="username" value={account.username} onChange={handleLoginInputChange} />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="password" className="form-label">Password</label>
-                                        <input type="password" className="form-control" id="password" name="password" value={account.password} onChange={handleLoginInputChange} />
-                                    </div>
-                                    <button id="login" type="submit" className="btn btn-primary">登入</button>
-                                </form>
+            <div className="login-page container-fluid p-0">
+                <div className="row g-0 h-100">
+                    <div className="col-lg-6 d-none d-lg-block">
+                        <div
+                            className="bg-image h-100"
+                            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1567696911980-2eed69a46042?q=60&w=1500&auto=format&fit=crop")' }}
+                        />
+                    </div>
+                    <div className="col-lg-6 col-md-12 d-flex align-items-center justify-content-center">
+                        <div className="px-4 py-5 w-100" style={{ maxWidth: 400 }}>
+                            <div className="text-center mb-4">
+                                <h1 className="logo">
+                                    <NavLink to="/" className="logo-href" style={{
+                                        backgroundImage: 'url(../public/images/logo.png)',
+                                        margin: '0 auto',
+                                    }}>
+                                        home
+                                    </NavLink>
+                                </h1>
+                                <h2>歡迎回來</h2>
+                                <p className="text-muted">請輸入您的帳號密碼以登入</p>
                             </div>
+                            <form onSubmit={handleLogin}>
+                                <div className="form-floating mb-3">
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        id="username"
+                                        name="username"
+                                        value={account.username}
+                                        onChange={handleLoginInputChange}
+                                    />
+                                    <label htmlFor="username">電子郵件</label>
+                                </div>
+                                <div className="form-floating mb-3">
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        id="password"
+                                        name="password"
+                                        value={account.password}
+                                        onChange={handleLoginInputChange}
+                                    />
+                                    <label htmlFor="password">密碼</label>
+                                </div>
+                                <div className="d-grid gap-2 mt-4">
+                                    <button id="login" className="btn btn-primary py-3" type="submit">登入</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

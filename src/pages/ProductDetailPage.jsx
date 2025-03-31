@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
 
     return (
         <>
-            <div className="container-fluid" style={{ paddingTop: "64px" }}>
+            <div className="container-fluid" style={{ paddingTop: "80px" }}>
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-md-7">

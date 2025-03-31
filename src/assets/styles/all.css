@@ -12847,7 +12847,7 @@ body {
 .logo-href {
   display: block;
   width: 100px;
-  height: 40px;
+  height: 60px;
   background-size: cover;
   background-position: 50% 50%;
   text-indent: 101%;
@@ -12877,4 +12877,14 @@ body {
   height: 300px;
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.login-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.login-page .bg-image {
+  background-size: cover;
+  background-position: center;
 }/*# sourceMappingURL=all.css.map */

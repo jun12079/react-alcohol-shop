@@ -51,7 +51,7 @@ export default function CheckoutFormPage() {
 
     return (
         <>
-            <div className="container" style={{ paddingTop: "64px" }}>
+            <div className="container" style={{ paddingTop: "80px" }}>
                 <div className="row justify-content-center">
                     <div className="col-md-10">
                         <nav className="navbar navbar-expand-lg navbar-light px-0">

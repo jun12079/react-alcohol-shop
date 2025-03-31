@@ -35,7 +35,11 @@ export default function Header() {
 		<nav className="navbar navbar-expand-lg navbar-light fixed-top bg-blur shadow-sm">
 			<div className="container">
 				<h1 className="logo">
-					<NavLink to="/" className="logo-href" style={{ backgroundImage: 'url(./images/logo.png)' }}>
+					<NavLink
+						to="/"
+						className="logo-href"
+						style={{ backgroundImage: 'url(./images/logo.png)' }}
+					>
 						home
 					</NavLink>
 				</h1>
@@ -43,14 +47,14 @@ export default function Header() {
 					className="navbar-toggler"
 					type="button"
 					data-bs-toggle="collapse"
-					data-bs-target="#navbarNavAltMarkup"
-					aria-controls="navbarNavAltMarkup"
+					data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent"
 					aria-expanded="false"
 					aria-label="Toggle navigation"
 				>
 					<span className="navbar-toggler-icon" />
 				</button>
-				<div className="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+				<div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
 					<div className="navbar-nav">
 						{routes.map((route) => (
 							<NavLink key={route.path} to={route.path} className="nav-item nav-link me-4">

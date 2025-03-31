@@ -175,7 +175,7 @@ export default function CartPage() {
 
     return (
         <>
-            <div className="container-fluid" style={{ paddingTop: "64px" }}>
+            <div className="container-fluid" style={{ paddingTop: "80px" }}>
                 <div className="container">
                     <div className="mt-3">
                         <h3 className="mt-3 mb-4">購物車</h3>
