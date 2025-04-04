@@ -33,6 +33,8 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      'indent': ['error', 2, { SwitchCase: 1 }],
+      'no-console': 'error',
     },
   },
 ]
