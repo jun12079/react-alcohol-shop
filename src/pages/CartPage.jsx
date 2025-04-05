@@ -197,6 +197,7 @@ export default function CartPage() {
                               aria-label="Example text with button addon"
                               aria-describedby="button-addon1"
                               value={cartItem.qty}
+                              readOnly
                             />
                             <div className="input-group-append">
                               <button

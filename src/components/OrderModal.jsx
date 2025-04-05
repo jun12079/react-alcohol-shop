@@ -96,11 +96,15 @@ function OrderModal({ tempOrder, isOrderModalOpen, setIsOrderModalOpen, getOrder
       ...modalData.products,
     };
 
+    // 取得要刪除商品的final_total
+    const removedFinalTotal = obj[productItem_id].final_total;
+
     delete obj[productItem_id];
 
     setModalData({
       ...modalData,
       products: obj,
+      total: modalData.total - removedFinalTotal,
     });
   }
 

@@ -63,9 +63,8 @@ export default function ProductDetailPage() {
         setIsScreenLoading(false);
       }
     };
-    getCart();
     getProducts();
-  }, [getCart, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     const getProduct = async () => {
@@ -188,12 +187,7 @@ export default function ProductDetailPage() {
                       aria-label="Example text with button addon"
                       aria-describedby="button-addon1"
                       value={qtySelect}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value, 10);
-                        if (!isNaN(value) && value > 0) {
-                          setQtySelect(value);
-                        }
-                      }}
+                      readOnly
                     />
                     <div className="input-group-append">
                       <button

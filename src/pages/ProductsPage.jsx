@@ -160,7 +160,11 @@ export default function ProductsPage() {
                         >
                           <i
                             className={`${wishList[product.id] ? 'fas' : 'far'} fa-heart position-absolute`}
-                            style={{ right: "16px", top: "16px" }}
+                            style={{
+                              right: "16px",
+                              top: "16px",
+                              color: wishList[product.id] ? "red" : "gray"
+                            }}
                           ></i>
                         </button>
                         <div className="card-body p-0">
